@@ -22,6 +22,8 @@ Modeled strictly on the minimalist, text-first, high-performance design of [Berk
 ├── css/
 │   └── style.css               # Minimalist retro stylesheet
 ├── assets/
+│   ├── icon/                   # Corporate icon & header branding
+│   ├── legal/                  # Official governance & policy PDFs
 │   └── logo.svg                # Vector logo mark
 ├── pages/
 │   ├── founders-message.html   # Founder's Message
