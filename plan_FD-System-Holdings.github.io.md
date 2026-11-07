@@ -13,7 +13,7 @@
 ### Current File Inventory
 - `index.html` (2.8 KB): Homepage layout.
 - `css/style.css` (3.0 KB): Global stylesheets.
-- `pages/` (6 HTML files): `annual-reports.html`, `founders-message.html`, `governance.html`, `news-releases.html`, `partners.html`, `software.html`.
+- `pages/` (4 active subpages, 2 archived templates): `founders-message.html`, `governance.html`, `news-releases.html`, `partners.html` (active); `annual-reports.html`, `software.html` (archived templates in `archive/`).
 - `assets/`: Legal PDFs, logos, and images.
 - `CNAME`, `README.md`.
 
