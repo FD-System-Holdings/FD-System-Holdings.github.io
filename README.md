@@ -27,11 +27,14 @@ Modeled strictly on the minimalist, text-first, high-performance design of [Berk
 │   └── logo.svg                # Vector logo mark
 ├── pages/
 │   ├── founders-message.html   # Founder's Message
-│   ├── annual-reports.html     # Annual Reports & interim statements
-│   ├── news-releases.html      # News Releases from FD System Holdings
-│   ├── software.html           # Links to FD System Holdings Software
 │   ├── governance.html         # Corporate Governance & Ethics
-│   └── partners.html           # Links to Companies We Work With
+│   ├── partners.html           # Links to Companies We Work With
+│   └── privacy-policy.html     # Website Privacy Policy
+├── archive/                    # Archived page templates for future use
+│   ├── annual-reports.html     # Template: Annual Reports & interim statements
+│   ├── news-releases.html      # Template: News Releases from FD System Holdings
+│   └── software.html           # Template: Links to FD System Holdings Software
+├── generate_pdf.py             # Script for compiling legal PDFs
 └── reports/
     └── README.md               # Guide for PDF report uploads
 ```

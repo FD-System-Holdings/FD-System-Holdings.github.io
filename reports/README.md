@@ -2,14 +2,10 @@
 
 Place annual and interim reports here as PDF documents.
 
-By default, the following filenames are referenced in [pages/annual-reports.html](../pages/annual-reports.html):
-- `annual-report-2025.pdf`
-- `annual-report-2024.pdf`
-- `annual-report-2023.pdf`
-- `quarterly-q3-2025.pdf`
-- `quarterly-q2-2025.pdf`
-- `quarterly-q1-2025.pdf`
+Currently, the annual reports template is archived at [archive/annual-reports.html](../archive/annual-reports.html) for future release.
 
-To add new reports:
+To activate reports in the future:
 1. Copy your PDF files into this `reports/` folder.
-2. Add a corresponding `<tr>` or `<li>` link inside `pages/annual-reports.html`.
+2. Move `archive/annual-reports.html` back to `pages/annual-reports.html`.
+3. Add a corresponding `<tr>` or `<li>` download link inside `pages/annual-reports.html` pointing to `../reports/<filename>.pdf`.
+4. Restore the link to `Annual Reports` in `index.html`.
