@@ -18,13 +18,14 @@ Modeled strictly on the minimalist, text-first, high-performance design of [Berk
 ## Site Structure
 
 ```
+├── .nojekyll                   # Disables Jekyll processing on GitHub Pages
+├── CNAME                       # Custom domain routing (fdsystemholdings.com)
 ├── index.html                  # Official Home Page
 ├── css/
 │   └── style.css               # Minimalist retro stylesheet
 ├── assets/
 │   ├── icon/                   # Corporate icon & header branding
-│   ├── legal/                  # Official governance & policy PDFs
-│   └── logo.svg                # Vector logo mark
+│   └── legal/                  # Official governance & policy PDFs
 ├── pages/
 │   ├── founders-message.html   # Founder's Message
 │   ├── governance.html         # Corporate Governance & Ethics
@@ -34,16 +35,29 @@ Modeled strictly on the minimalist, text-first, high-performance design of [Berk
 │   ├── annual-reports.html     # Template: Annual Reports & interim statements
 │   ├── news-releases.html      # Template: News Releases from FD System Holdings
 │   └── software.html           # Template: Links to FD System Holdings Software
-├── generate_pdf.py             # Script for compiling legal PDFs
-└── reports/
-    └── README.md               # Guide for PDF report uploads
+├── reports/
+│   └── README.md               # Guide for PDF report uploads
+└── scripts/
+    ├── generate_pdf.py         # Script for compiling legal PDFs
+    └── verify.py               # Zero-dependency site validator and link checker
 ```
+
+## Local Verification & Utilities
+
+- **Verify all links and headings:**
+  ```bash
+  python scripts/verify.py
+  ```
+- **Recompile legal PDF documents:**
+  ```bash
+  python scripts/generate_pdf.py
+  ```
 
 ## GitHub Pages Deployment
 
-Because this repository is named `fd-system-holdings.github.io`:
+Because this repository is configured with a custom domain via `CNAME`:
 1. Push this codebase to the `main` branch.
 2. In GitHub under **Repository Settings > Pages**:
    - Source: **Deploy from a branch**
    - Branch: `main` / Folder: `/(root)`
-3. The site will be live at `https://fd-system-holdings.github.io`.
+3. The site is live at `https://fdsystemholdings.com`.

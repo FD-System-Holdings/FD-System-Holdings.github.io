@@ -1,7 +1,7 @@
 import os
 import subprocess
 import shutil
-import pypdf
+import tempfile
 
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
@@ -364,55 +364,106 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </html>
 """
 
+def find_browser():
+    """Finds an installed Chromium-based browser (Edge, Chrome, or Chromium)."""
+    # 1. Look in system PATH
+    for name in ["msedge", "microsoft-edge", "chrome", "google-chrome", "chromium"]:
+        path = shutil.which(name)
+        if path:
+            return path
+
+    # 2. Known Windows paths
+    windows_paths = [
+        os.path.expandvars(r"%ProgramFiles%\Microsoft\Edge\Application\msedge.exe"),
+        os.path.expandvars(r"%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"),
+        os.path.expandvars(r"%LocalAppData%\Microsoft\Edge\Application\msedge.exe"),
+        os.path.expandvars(r"%ProgramFiles%\Google\Chrome\Application\chrome.exe"),
+        os.path.expandvars(r"%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"),
+        os.path.expandvars(r"%LocalAppData%\Google\Chrome\Application\chrome.exe"),
+    ]
+    for p in windows_paths:
+        if os.path.isfile(p):
+            return p
+
+    # 3. Known macOS paths
+    macos_paths = [
+        "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    ]
+    for p in macos_paths:
+        if os.path.isfile(p):
+            return p
+
+    # 4. Known Linux paths
+    linux_paths = [
+        "/usr/bin/microsoft-edge",
+        "/usr/bin/google-chrome",
+        "/usr/bin/chromium-browser",
+        "/usr/bin/chromium",
+    ]
+    for p in linux_paths:
+        if os.path.isfile(p):
+            return p
+
+    return None
+
 def generate_pdf():
-    temp_dir = os.environ.get("TEMP", "C:\\temp")
+    browser_path = find_browser()
+    if not browser_path:
+        raise RuntimeError(
+            "Could not find Microsoft Edge, Google Chrome, or Chromium. "
+            "Please ensure a Chromium-based browser is installed."
+        )
+    print(f"Using browser: {browser_path}")
+
+    # Determine paths relative to repository root
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    final_pdf = os.path.join(repo_root, "assets", "legal", "Privacy-Policy.pdf")
+
+    temp_dir = tempfile.gettempdir()
     temp_html = os.path.join(temp_dir, "Privacy-Policy-temp.html")
     temp_pdf = os.path.join(temp_dir, "Privacy-Policy-temp.pdf")
-    final_pdf = os.path.abspath("assets/legal/Privacy-Policy.pdf")
 
-    with open(temp_html, "w", encoding="utf-8") as f:
-        f.write(HTML_TEMPLATE)
-
-    edge_path = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-    cmd = [
-        edge_path,
-        "--headless=new",
-        "--disable-gpu",
-        "--no-pdf-header-footer",
-        f"--print-to-pdf={temp_pdf}",
-        f"file:///{temp_html.replace(os.sep, '/')}"
-    ]
-
-    print(f"Running command: {' '.join(cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    print("Edge stdout:", result.stdout)
-    print("Edge stderr:", result.stderr)
-
-    if not os.path.exists(temp_pdf):
-        raise RuntimeError("Failed to generate PDF via Edge headless")
-
-    reader = pypdf.PdfReader(temp_pdf)
-    num_pages = len(reader.pages)
-    print(f"Generated PDF page count: {num_pages}")
-    
-    for i, p in enumerate(reader.pages):
-        print(f"--- Page {i+1} sample text ---")
-        print(p.extract_text()[:250])
-
-    if num_pages != 2:
-        print(f"Warning: expected 2 pages, got {num_pages}")
-
-    # Copy to target destination
-    os.makedirs(os.path.dirname(final_pdf), exist_ok=True)
-    shutil.copy2(temp_pdf, final_pdf)
-    print(f"Successfully wrote {final_pdf} ({os.path.getsize(final_pdf)} bytes)")
-
-    # Clean up temp files
     try:
-        os.remove(temp_html)
-        os.remove(temp_pdf)
-    except Exception as e:
-        print(f"Temp cleanup notice: {e}")
+        with open(temp_html, "w", encoding="utf-8") as f:
+            f.write(HTML_TEMPLATE)
+
+        cmd = [
+            browser_path,
+            "--headless=new",
+            "--disable-gpu",
+            "--no-pdf-header-footer",
+            f"--print-to-pdf={temp_pdf}",
+            f"file:///{temp_html.replace(os.sep, '/')}"
+        ]
+
+        print(f"Running command: {' '.join(cmd)}")
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.stdout.strip():
+            print("Browser stdout:", result.stdout.strip())
+        if result.stderr.strip():
+            print("Browser stderr:", result.stderr.strip())
+
+        if not os.path.exists(temp_pdf) or os.path.getsize(temp_pdf) == 0:
+            raise RuntimeError(f"Failed to generate PDF via {os.path.basename(browser_path)}")
+
+        file_size = os.path.getsize(temp_pdf)
+        print(f"Generated PDF verified: {file_size} bytes")
+
+        # Copy to target destination
+        os.makedirs(os.path.dirname(final_pdf), exist_ok=True)
+        shutil.copy2(temp_pdf, final_pdf)
+        print(f"Successfully wrote {final_pdf} ({file_size} bytes)")
+
+    finally:
+        # Clean up temp files
+        for temp_file in (temp_html, temp_pdf):
+            if os.path.exists(temp_file):
+                try:
+                    os.remove(temp_file)
+                except Exception as e:
+                    print(f"Temp cleanup notice for {temp_file}: {e}")
 
 if __name__ == "__main__":
     generate_pdf()

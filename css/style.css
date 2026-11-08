@@ -40,7 +40,7 @@ header {
   margin-bottom: 4px;
 }
 
-.company-title {
+h1.company-title, .company-title {
   font-size: 26pt;
   font-weight: bold;
   letter-spacing: 1px;
@@ -53,10 +53,11 @@ header {
   margin: 3px 0;
 }
 
-.page-subtitle {
+h1.page-subtitle, h2.page-subtitle, .page-subtitle {
   font-size: 14pt;
   font-weight: bold;
   margin-top: 6px;
+  margin-bottom: 0;
 }
 
 hr {
@@ -149,6 +150,10 @@ ul.directory-list li {
 
 .content-block p {
   margin-bottom: 14px;
+  text-indent: 0;
+}
+
+.content-block p.indent {
   text-indent: 1.5em;
 }
 
